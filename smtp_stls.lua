@@ -17,8 +17,8 @@ local function augment(obj, mt)
   end
 end
 
-function metat.__index:starttls(starttls, domain, params, ext)
-  if not domain or not starttls then return 1 end
+function metat.__index:starttls(starttls, params, domain, ext)
+  if not starttls or not domain then return 1 end
 
   -- enforce client mode
   params.mode = "client"
@@ -45,7 +45,7 @@ _M.send = socket.protect(function(ms)
   augment(s, metat)
 
   local ext = s:greet(ms.domain)
-  ext = s:starttls(ms.starttls, ms.domain, ms.tls_params, ext)
+  ext = s:starttls(ms.starttls, ms.tls_params, ms.domain, ext)
 
   s:auth(ms.user, ms.password, ext)
   s:send(ms)
