@@ -7,6 +7,16 @@ local ssl = require("ssl")
 local _M = smtp
 local metat = { __index = {} }
 
+local function augment(obj, mt)
+  local orig_mt = getmetatable(obj).__index
+
+  for name, method in pairs(mt.__index) do
+    if type(method) == "function" then
+      orig_mt[name] = method
+    end
+  end
+end
+
 function metat.__index:starttls(starttls, domain, params, ext)
   if not domain or not starttls then return 1 end
 
@@ -31,11 +41,10 @@ end
 -- override original socket.smtp.send to inject STARTTLS
 _M.send = socket.protect(function(ms)
   local s = _M.open(ms.server, ms.port, ms.create)
+
+  augment(s, metat)
+
   local ext = s:greet(ms.domain)
-
-  local mt = getmetatable(s)
-  for k,v in pairs(metat.__index) do mt.__index[k] = v end
-
   ext = s:starttls(ms.starttls, ms.domain, ms.tls_params, ext)
 
   s:auth(ms.user, ms.password, ext)
