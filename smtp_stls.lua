@@ -33,7 +33,7 @@ _M.send = socket.protect(function(ms)
   local s = _M.open(ms.server, ms.port, ms.create)
   local ext = s:greet(ms.domain)
 
-  mt = getmetatable(s)
+  local mt = getmetatable(s)
   for k,v in pairs(metat.__index) do mt.__index[k] = v end
 
   ext = s:starttls(ms.starttls, ms.domain, ms.tls_params, ext)
