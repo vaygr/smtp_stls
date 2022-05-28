@@ -22,7 +22,6 @@ local function mail(to, subject, message)
     port = 25,
     starttls = true,
     tls_params = {
-      mode = "client",
       protocol = "tlsv1_3",
       verify = "peer",
       cafile = "/etc/ssl/certs/ca-certificates.crt",

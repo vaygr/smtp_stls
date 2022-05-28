@@ -10,6 +10,11 @@ local metat = { __index = {} }
 function metat.__index:starttls(starttls, domain, params, ext)
   if not domain or not starttls then return 1 end
 
+  -- enforce client mode
+  params.mode = "client"
+  -- fallback protocol
+  params.protocol = params.protocol or "any"
+
   if string.find(ext, "STARTTLS") then
     self.try(self.tp:command("STARTTLS"))
     self.try(self.tp:check("2.."))
