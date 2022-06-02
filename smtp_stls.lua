@@ -28,7 +28,13 @@ function metat.__index:starttls(starttls, params, domain, ext)
   if string.find(ext, "STARTTLS") then
     self.try(self.tp:command("STARTTLS"))
     self.try(self.tp:check("2.."))
+
+    local timeout = self.tp.c:gettimeout()
+    -- wrap the connection
     self.tp.c = self.try(ssl.wrap(self.tp.c, params))
+    -- inherit original socket's connect timeout
+    self.tp.c:settimeout(timeout)
+
     self.try(self.tp.c:dohandshake())
     -- resend EHLO on success
     self.try(self.tp:command("EHLO", domain))
